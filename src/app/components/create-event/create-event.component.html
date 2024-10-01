@@ -1,0 +1,93 @@
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-4xl font-bold mb-8 text-center text-indigo-600">Create Your Amazing Event</h1>
+  
+  <div class="max-w-3xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
+    <div class="bg-indigo-600 h-2">
+      <div class="bg-green-400 h-full transition-all duration-500 ease-out" [style.width]="progressWidth"></div>
+    </div>
+    
+    <div class="p-8">
+      <div class="mb-6 flex justify-between text-sm font-medium text-gray-500">
+        <span [class.text-green-500]="currentStep >= 1">Basic Info</span>
+        <span [class.text-green-500]="currentStep >= 2">Details</span>
+        <span [class.text-green-500]="currentStep >= 3">Tickets</span>
+        <span [class.text-green-500]="currentStep === 4">Confirm</span>
+      </div>
+
+      <form [formGroup]="eventForm" (ngSubmit)="onSubmit()">
+        <!-- Step 1: Basic Info -->
+        <div *ngIf="currentStep === 1" [@fadeInOut]>
+          <div class="mb-6">
+            <label for="title" class="block mb-2 font-semibold text-gray-700">Event Title</label>
+            <input type="text" id="title" formControlName="title" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400">
+          </div>
+          <div class="mb-6">
+            <label for="date" class="block mb-2 font-semibold text-gray-700">Date</label>
+            <input type="date" id="date" formControlName="date" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400">
+          </div>
+        </div>
+
+        <!-- Step 2: Details -->
+        <div *ngIf="currentStep === 2" [@fadeInOut]>
+          <div class="mb-6">
+            <label for="location" class="block mb-2 font-semibold text-gray-700">Location</label>
+            <input type="text" id="location" formControlName="location" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400">
+          </div>
+          <div class="mb-6">
+            <label for="description" class="block mb-2 font-semibold text-gray-700">Description</label>
+            <textarea id="description" formControlName="description" rows="4" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"></textarea>
+          </div>
+          <div class="mb-6">
+            <label for="image" class="block mb-2 font-semibold text-gray-700">Event Image</label>
+            <input type="file" id="image" (change)="onFileChange($event)" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400">
+          </div>
+        </div>
+
+        <!-- Step 3: Tickets -->
+        <div *ngIf="currentStep === 3" [@fadeInOut]>
+          <div formArrayName="tickets">
+            <div *ngFor="let ticket of tickets.controls; let i = index" [formGroupName]="i" class="mb-6">
+              <div class="flex mb-2">
+                <input type="text" formControlName="type" placeholder="Ticket Type" class="w-1/3 px-4 py-2 mr-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                <input type="number" formControlName="price" placeholder="Price" class="w-1/3 px-4 py-2 mr-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                <input type="number" formControlName="quantity" placeholder="Quantity" class="w-1/3 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400">
+              </div>
+            </div>
+            <button type="button" (click)="addTicket()" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400">
+              Add Ticket Type
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 4: Confirm -->
+        <div *ngIf="currentStep === 4" [@fadeInOut]>
+          <h2 class="text-2xl font-bold mb-4 text-indigo-600">Confirm Your Event Details 📅</h2>
+          <div class="mb-4">
+            <p>📝 <strong>Title:</strong> {{ eventForm.get('title')?.value }}</p>
+            <p>📅 <strong>Date:</strong> {{ eventForm.get('date')?.value | date:'mediumDate' }}</p>
+            <p>📍 <strong>Location:</strong> {{ eventForm.get('location')?.value }}</p>
+            <p>📝 <strong>Description:</strong> {{ eventForm.get('description')?.value }}</p>
+            <p>🖼️ <strong>Image:</strong> {{ selectedImageName }}</p>
+            <div *ngFor="let ticket of tickets.controls; let i = index" class="mt-2">
+              <p>🎟️ <strong>Ticket Type {{ i + 1 }}:</strong> {{ ticket.get('type')?.value }}</p>
+              <p>💰 <strong>Price:</strong> {{ ticket.get('price')?.value | currency }}</p>
+              <p>🔢 <strong>Number of Tickets:</strong> {{ ticket.get('quantity')?.value }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-between mt-8">
+          <button *ngIf="currentStep > 1" type="button" (click)="previousStep()" class="px-6 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500">
+            Previous
+          </button>
+          <button *ngIf="currentStep < 4" type="button" (click)="nextStep()" class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            Next
+          </button>
+          <button *ngIf="currentStep === 4" type="submit" class="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400">
+            Create Event
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
